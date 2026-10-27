@@ -102,6 +102,21 @@ async function fetchModels() {
     el.modelsHint.textContent = "احفظ المفتاح الأول عشان نجيب الموديلات المتاحة.";
     return;
   }
+  el.modelsHint.textContent = "جاري التحقق من المفتاح...";
+  // نتأكد إن المفتاح صالح من endpoint الخاص بالمفتاح قبل ما نقول "متصل"
+  try {
+    const check = await fetch(`${API}/key`, { headers: { Authorization: `Bearer ${key}` } });
+    if (check.status === 401 || check.status === 403) {
+      state.models = [];
+      fillModels([]);
+      el.modelsHint.textContent = "المفتاح غير صالح — امسحه وجرّب مفتاح تاني.";
+      setConn(false, "المفتاح غير صالح");
+      setKeyStatus("المفتاح المحفوظ مرفوض من OpenRouter (401).", "bad");
+      return;
+    }
+  } catch {
+    // لو endpoint التحقق مش متاح، نكمل ونجرب الموديلات
+  }
   el.modelsHint.textContent = "جاري جلب الموديلات...";
   try {
     const res = await fetch(`${API}/models`, { headers: { Authorization: `Bearer ${key}` } });
