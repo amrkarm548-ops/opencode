@@ -2,10 +2,21 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "framework": "vite",
   "installCommand": "npm i -g bun@1.4.4 && bun install --frozen-lockfile",
-  "buildCommand": "VITE_OPENCODE_SERVER_MODE=none bun --cwd packages/app build && find packages/app/dist -name '*.map' -delete",
+  "buildCommand": "bun --cwd packages/app build && find packages/app/dist -name '*.map' -delete",
   "outputDirectory": "packages/app/dist",
   "cleanUrls": true,
   "trailingSlash": false,
+  "functions": {
+    "api/opencode.js": {
+      "maxDuration": 60
+    }
+  },
+  "rewrites": [
+    { "source": "/api/(.*)", "destination": "/api/opencode" },
+    { "source": "/auth/(.*)", "destination": "/api/opencode" },
+    { "source": "/openapi.json", "destination": "/api/opencode" },
+    { "source": "/event", "destination": "/api/opencode" }
+  ],
   "headers": [
     {
       "source": "/(.*)",
