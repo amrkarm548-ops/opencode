@@ -1,9 +1,9 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "framework": null,
-  "installCommand": "echo 'static site: no install needed'",
-  "buildCommand": "echo 'static site: no build needed'",
-  "outputDirectory": "site",
+  "framework": "vite",
+  "installCommand": "npm i -g bun@1.4.4 && bun install --frozen-lockfile",
+  "buildCommand": "VITE_OPENCODE_SERVER_MODE=none bun --cwd packages/app build && find packages/app/dist -name '*.map' -delete",
+  "outputDirectory": "packages/app/dist",
   "cleanUrls": true,
   "trailingSlash": false,
   "headers": [
