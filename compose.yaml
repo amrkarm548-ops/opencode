@@ -1,0 +1,44 @@
+name: opencode
+
+services:
+  opencode:
+    image: ghcr.io/anomalyco/opencode:latest
+    command: ["serve", "--hostname", "0.0.0.0", "--port", "4096"]
+    init: true
+    restart: unless-stopped
+    working_dir: /workspace
+    environment:
+      OPENCODE_SERVER_PASSWORD: ${OPENCODE_SERVER_PASSWORD:?Set OPENCODE_SERVER_PASSWORD in .env}
+      OPENROUTER_API_KEY: ${OPENROUTER_API_KEY:?Set OPENROUTER_API_KEY in .env}
+      OPENCODE_CONFIG: /etc/opencode/opencode.json
+    volumes:
+      - opencode_data:/root/.local/share/opencode
+      - opencode_config:/root/.config/opencode
+      - opencode_state:/root/.local/state/opencode
+      - ${OPENCODE_WORKSPACE:-./workspace}:/workspace
+      - ./deploy/opencode.json:/etc/opencode/opencode.json:ro
+    expose:
+      - "4096"
+
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    depends_on:
+      - opencode
+    environment:
+      OPENCODE_DOMAIN: ${OPENCODE_DOMAIN:?Set OPENCODE_DOMAIN in .env}
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    volumes:
+      - ./deploy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+
+volumes:
+  opencode_data:
+  opencode_config:
+  opencode_state:
+  caddy_data:
+  caddy_config:

@@ -1,0 +1,4 @@
+{$OPENCODE_DOMAIN} {
+	encode zstd gzip
+	reverse_proxy opencode:4096
+}
