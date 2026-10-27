@@ -15,6 +15,7 @@ From the repository directory on the server:
 
 ```sh
 cp .env.example .env
+chmod 600 .env
 mkdir -p workspace
 ```
 
@@ -22,7 +23,6 @@ Edit `.env` on the server and set:
 
 - `OPENCODE_DOMAIN` to the DNS name pointing to this host.
 - `OPENCODE_SERVER_PASSWORD` to a unique, long password.
-- `OPENROUTER_API_KEY` to the provider key. Keep it only in `.env` or the host's secret manager; never commit it or put it in a `VITE_*` variable.
 - `OPENCODE_WORKSPACE` optionally to an absolute host path containing the project files OpenCode should access.
 
 Then start the stack:
@@ -34,10 +34,12 @@ docker compose logs -f opencode
 
 Open `https://<OPENCODE_DOMAIN>`. The web UI and API are served from one origin. On first use, connect using the server password from `.env`; the browser stores the authorized connection for later visits.
 
+To add the OpenRouter key, open **Settings → Providers**, select **OpenRouter → Connect**, choose the API-key option, and enter the key. The UI sends it to the OpenCode server, which stores it in its persistent credential storage; the key is not part of the browser bundle, `.env.example`, or Git. The initial server password is still required to authorize the browser before opening Settings.
+
 ## Persistence and updates
 
 - `OPENCODE_WORKSPACE` is a host directory mounted at `/workspace` in the container.
-- Named Docker volumes retain OpenCode's database, auth/config data, state, and Caddy certificates across container updates.
+- Named Docker volumes retain OpenCode's database, credentials/config data, state, and Caddy certificates across container updates.
 - To update the published OpenCode image:
 
   ```sh
@@ -49,4 +51,4 @@ Back up the workspace directory and the `opencode_data` Docker volume. Do not pu
 
 ## Security notes
 
-The OpenCode server is password-protected and is not published directly on port 4096; only Caddy's HTTPS ports are exposed. Keep the password and API key private, restrict VPS access, and use a fresh provider key if the previous experimental key has expired. The committed `deploy/opencode.json` contains model settings only and no credentials.
+The OpenCode server is password-protected and is not published directly on port 4096; only Caddy's HTTPS ports are exposed. Keep the server password and provider key private, restrict VPS access, and use a fresh provider key if the previous experimental key has expired. The committed `deploy/opencode.json` contains model settings only and no credentials.

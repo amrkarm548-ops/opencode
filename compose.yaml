@@ -9,7 +9,6 @@ services:
     working_dir: /workspace
     environment:
       OPENCODE_SERVER_PASSWORD: ${OPENCODE_SERVER_PASSWORD:?Set OPENCODE_SERVER_PASSWORD in .env}
-      OPENROUTER_API_KEY: ${OPENROUTER_API_KEY:?Set OPENROUTER_API_KEY in .env}
       OPENCODE_CONFIG: /etc/opencode/opencode.json
     volumes:
       - opencode_data:/root/.local/share/opencode
